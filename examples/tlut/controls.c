@@ -23,8 +23,8 @@ void update_controls()
     struct controller_data keys = get_keys_pressed();	
 
     // JOYSTICK
-	joystick_x=keys.c[0].x;
-	joystick_y=keys.c[0].y;
+    joystick_x=keys.c[0].x;
+    joystick_y=keys.c[0].y;
 		
     // DPAD
     dpad_up=0;
