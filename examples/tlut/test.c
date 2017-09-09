@@ -10,26 +10,13 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
+#include "system.c"
+#include "controls.c"
+
 // SYSTEM
 static sprite_t *graph[19]; // sprites
 static display_context_t disp = 0; // screen
 char tStr[32]; // text
-
-// KEY
-static int8_t dpad_up;
-static int8_t dpad_down;
-static int8_t dpad_left;
-static int8_t dpad_right;
-static int8_t a_button;
-static int8_t b_button;
-static int8_t z_button;
-static int8_t l_button;
-static int8_t r_button;
-static int8_t c_left;
-static int8_t c_right;
-static int8_t c_down;
-static int8_t c_up;
-static int8_t start_button;
 
 // INTERNAL FUNCTIONS
 uint8_t restore_type=1;
@@ -63,7 +50,6 @@ int start_rotate=0;
 int rotate_direction=0;
 int rotate_counter=0;
 
-#include "system.c"
 
 // PROGRAM
 int main(void)
@@ -136,8 +122,8 @@ int main(void)
             rdp_draw_filled_rectangle(0,0,320,240);
         }
 
-        // SCAN CONTROLS
-        #include "controls.c"	 
+        // SCAN CONTROLS		
+        update_controls();	 
 		
         // RDP TEXTURE MODE
         rdp_enable_texture_copy();
@@ -154,8 +140,8 @@ int main(void)
         graphics_draw_sprite(disp,115,158,graph[16]);
 
         // MOUSE USES JOYSTICK
-        if (keys.c[0].x<-4 || keys.c[0].x>4) { mouse_x+=keys.c[0].x/5; }
-        if (keys.c[0].y<-4 || keys.c[0].y>4) { mouse_y-=keys.c[0].y/5; }
+        if (joystick_x<-4 || joystick_x>4) { mouse_x+=joystick_x/5; }
+        if (joystick_y<-4 || joystick_y>4) { mouse_y-=joystick_y/5; }
 		
         if (mouse_x<0) { mouse_x=0; }
         if (mouse_x>304) { mouse_x=304; }
