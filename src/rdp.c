@@ -79,23 +79,23 @@
  * */
 typedef struct
 {
-    /** @brief S location of the top left of the texture relative to the original texture */
-    uint16_t s;
-    /** @brief T location of the top left of the texture relative to the original texture */
-    uint16_t t;
-    /** @brief Width of the texture */
-    uint16_t width;
-    /** @brief Height of the texture */
-    uint16_t height;
-	
+	/** @brief S location of the top left of the texture relative to the original texture */
+	uint16_t s;
+	/** @brief T location of the top left of the texture relative to the original texture */
+	uint16_t t;
+	/** @brief Width of the texture */
+	uint16_t width;
+	/** @brief Height of the texture */
+	uint16_t height;
+		
 	uint16_t real_width;
-	
+		
 	uint16_t real_height;
-	
+		
 	uint8_t cp_x;
-	
+		
 	uint8_t cp_y;
-	
+		
 	uint8_t cp_start;
 } sprite_cache;
 
@@ -135,7 +135,7 @@ static uint8_t enable_tlut = 0;
 
 static uint8_t atomic_prim = 1;
 
-int tri_set=0x0A000000; // textured by default
+int tri_set=0x0A000000;
 
 /**
  * @brief RDP interrupt handler
