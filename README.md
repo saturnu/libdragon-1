@@ -8,6 +8,7 @@ Libdragon with expanded features :
 - Intensify / Color Mask and other kind of effects using different color combiners
 - 4 and 8bit texture support
 - Set other modes options: enable copy / 1cycle, enable tlut, enable bilinear filter (useful for zooming), enable atomic prim, etc
+- Framebuffer effects
 - Bug fixes: RDP textures works now on 32bit mode
 - Some other fixes
 
