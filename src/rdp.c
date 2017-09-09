@@ -1074,7 +1074,7 @@ void rdp_draw_filled_triangle( float x1, float y1, float x2, float y2, float x3,
     int winding = ( x1 * y2 - x2 * y1 ) + ( x2 * y3 - x3 * y2 ) + ( x3 * y1 - x1 * y3 );
     int flip = ( winding > 0 ? 1 : 0 ) << 23;
     
-	// command & edge coefficients
+    // command & edge coefficients
     __rdp_ringbuffer_queue( tri_set | flip | yl );
     __rdp_ringbuffer_queue( ym | yh );
     __rdp_ringbuffer_queue( xl );
@@ -1154,7 +1154,7 @@ void rdp_cp_sprite( int x, int y, int flags, int cp_x, int cp_y, int line )
 	
     rdp_draw_textured_rectangle_scaled( x, y + cache_line, x + cache.width, y + cache.height + cache_line, 1.0, 1.0, flags );
 	
-    // Fill when multiple object is requested
+    // Fill when multiple objects are requested
     if (line>0) 
         cache_line+=next_line;
     else
@@ -1248,7 +1248,7 @@ uint32_t get_pixel( display_context_t disp, int x, int y )
     if( __bitdepth == 2 )
     {
         uint16_t *buffer16 = (uint16_t *)__get_buffer( disp );
-		uint16_t packed_rdp = __get_pixel( buffer16, x, y );
+        uint16_t packed_rdp = __get_pixel( buffer16, x, y );
         return packed_rdp | (packed_rdp << 16);
     }
     else
@@ -1373,7 +1373,7 @@ void rdp_buffer_screen(display_context_t disp, uint16_t *buffer_texture, int tex
     }	
     else if (texture_mode==1)
         {
-                height = height >> 1 ; // 64x24? split 1
+            height = height >> 1 ; // 64x24? split 1
         }	
         else if (texture_mode==2)
             {
