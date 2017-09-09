@@ -79,24 +79,24 @@
  * */
 typedef struct
 {
-	/** @brief S location of the top left of the texture relative to the original texture */
-	uint16_t s;
-	/** @brief T location of the top left of the texture relative to the original texture */
-	uint16_t t;
-	/** @brief Width of the texture */
-	uint16_t width;
-	/** @brief Height of the texture */
-	uint16_t height;
-		
-	uint16_t real_width;
-		
-	uint16_t real_height;
-		
-	uint8_t cp_x;
-		
-	uint8_t cp_y;
-		
-	uint8_t cp_start;
+    /** @brief S location of the top left of the texture relative to the original texture */
+    uint16_t s;
+    /** @brief T location of the top left of the texture relative to the original texture */
+    uint16_t t;
+    /** @brief Width of the texture */
+    uint16_t width;
+    /** @brief Height of the texture */
+    uint16_t height;
+	
+    uint16_t real_width;
+	
+    uint16_t real_height;
+	
+    uint8_t cp_x;
+	
+    uint8_t cp_y;
+	
+    uint8_t cp_start;
 } sprite_cache;
 
 /** @brief Array of cached textures in RDP TMEM indexed by the RDP texture slot */
@@ -135,7 +135,7 @@ static uint8_t enable_tlut = 0;
 
 static uint8_t atomic_prim = 1;
 
-int tri_set=0x0A000000;
+int tri_set=0x0A000000; // textured by default
 
 /**
  * @brief RDP interrupt handler
@@ -312,7 +312,7 @@ void rdp_init( void )
     register_DP_handler( __rdp_interrupt );
     set_DP_interrupt( 1 );
 	
-	// NEW, fixes default prim colors
+    // NEW, fixes default prim colors
     __rdp_ringbuffer_queue( 0x3A000000 );
     __rdp_ringbuffer_queue( 0xFFFFFFFF );
     __rdp_ringbuffer_send();	
@@ -478,156 +478,156 @@ void rdp_enable_texture_copy( void )
     __rdp_ringbuffer_queue( 0x00004001 );
     __rdp_ringbuffer_send();
 	
-	// 4 pixels cycle
-	pixel_mode=0;	
+    // 4 pixels cycle
+    pixel_mode=0;	
 }
 
 // NEW: Enable or disable texture filter (use with 1cycle)
 void rdp_enable_filter( int type )
 {
-	if (type==0)
-		enable_filter=0;
-	else
-		enable_filter=1;
+    if (type==0)
+        enable_filter=0;
+    else
+        enable_filter=1;
 }
 
 // NEW: Enable or disable alpha blending (use with 1cycle)
 void rdp_enable_alpha( int type )
 {
-	if (type==0)
-		enable_alpha=0;
-	else
-		enable_alpha=0x0000003F;
+    if (type==0)
+        enable_alpha=0;
+    else
+        enable_alpha=0x0000003F;
 }
 
 // NEW: Enable or disable tlut (to take effect call texture copy or cycle1)
 void rdp_enable_tlut( int type )
 {
-	if (type==0)
-		enable_tlut=0;	
-	else
-		enable_tlut=1;
+    if (type==0)
+        enable_tlut=0;	
+    else
+        enable_tlut=1;
 }
 
 // NEW: Enable or disable atomic prim (delay between primitives)
 void rdp_enable_1primitive( int type )
 {
-	if (type==0)
-		atomic_prim=0;	
-	else
-		atomic_prim=1;
+    if (type==0)
+        atomic_prim=0;	
+    else
+        atomic_prim=1;
 }
 
 // NEW: 1cycle (Point sampled default)
 // Compatible with: X_Scale, RGB_Scale, Alpha blending
 void rdp_texture_1cycle( void )
 {
-	// Set Other Modes	
-	__rdp_ringbuffer_queue( 0x2F0008F0 | atomic_prim << 23 | enable_tlut << 15 | enable_filter << 13);
-	__rdp_ringbuffer_queue( 0x00404040 );
+    // Set Other Modes	
+    __rdp_ringbuffer_queue( 0x2F0008F0 | atomic_prim << 23 | enable_tlut << 15 | enable_filter << 13);
+    __rdp_ringbuffer_queue( 0x00404040 );
     __rdp_ringbuffer_send();	
 	
-	// Set Combine Mode
-	__rdp_ringbuffer_queue( 0x3C000061 );
-	__rdp_ringbuffer_queue( 0x082C01C0 | enable_alpha ); // 0x04200100 faster?
-	__rdp_ringbuffer_send();	
+    // Set Combine Mode
+    __rdp_ringbuffer_queue( 0x3C000061 );
+    __rdp_ringbuffer_queue( 0x082C01C0 | enable_alpha ); // 0x04200100 faster?
+    __rdp_ringbuffer_send();	
 	
-	// 1 pixel cycle
-	pixel_mode=1;	
+    // 1 pixel cycle
+    pixel_mode=1;	
 }	
 
 // NEW: Additive Blending
 void rdp_additive_blending( void )
 {
-	// Set Other Modes
-	__rdp_ringbuffer_queue( 0x2F0008F0 | atomic_prim << 23 | enable_tlut << 15 | enable_filter << 13);
-	__rdp_ringbuffer_queue( 0x00404040 );
+    // Set Other Modes
+    __rdp_ringbuffer_queue( 0x2F0008F0 | atomic_prim << 23 | enable_tlut << 15 | enable_filter << 13);
+    __rdp_ringbuffer_queue( 0x00404040 );
     __rdp_ringbuffer_send();	
 	
-	// Set Combine Mode
-	__rdp_ringbuffer_queue( 0x3C000061 );
-	__rdp_ringbuffer_queue( 0x082C017F );
-	__rdp_ringbuffer_send();		
+    // Set Combine Mode
+    __rdp_ringbuffer_queue( 0x3C000061 );
+    __rdp_ringbuffer_queue( 0x082C017F );
+    __rdp_ringbuffer_send();		
 		
-	// 1 pixel cycle
-	pixel_mode=1;	
+    // 1 pixel cycle
+    pixel_mode=1;	
 }
 
 // NEW: Intensify
 // RGB from 0 (normal) to 255 (white)
 void rdp_intensify( void )
 {
-	// Set Other Modes
-	__rdp_ringbuffer_queue( 0x2F0008F0 | atomic_prim << 23 | enable_tlut << 15 | enable_filter << 13);
-	__rdp_ringbuffer_queue( 0x00404040 );
+    // Set Other Modes
+    __rdp_ringbuffer_queue( 0x2F0008F0 | atomic_prim << 23 | enable_tlut << 15 | enable_filter << 13);
+    __rdp_ringbuffer_queue( 0x00404040 );
     __rdp_ringbuffer_send();	
 	
-	// Set Combine Mode
-	__rdp_ringbuffer_queue( 0x3C0000C1 );
-	__rdp_ringbuffer_queue( 0x032C00C0 | enable_alpha );
-	__rdp_ringbuffer_send();		
+    // Set Combine Mode
+    __rdp_ringbuffer_queue( 0x3C0000C1 );
+    __rdp_ringbuffer_queue( 0x032C00C0 | enable_alpha );
+    __rdp_ringbuffer_send();		
 		
-	// 1 pixel cycle
-	pixel_mode=1;
+    // 1 pixel cycle
+    pixel_mode=1;
 }
 
 // NEW: Unique Color (sprite silouette)
 void rdp_color( void )
 {
-	// Set Other Modes
-	__rdp_ringbuffer_queue( 0x2F0008F0 | atomic_prim << 23 | enable_tlut << 15 | enable_filter << 13);
-	__rdp_ringbuffer_queue( 0x00404040 );
+    // Set Other Modes
+    __rdp_ringbuffer_queue( 0x2F0008F0 | atomic_prim << 23 | enable_tlut << 15 | enable_filter << 13);
+    __rdp_ringbuffer_queue( 0x00404040 );
     __rdp_ringbuffer_send();	
 	
-	// Set Combine Mode
-	__rdp_ringbuffer_queue( 0x3C000063 );
-	__rdp_ringbuffer_queue( 0x082C01C0 | enable_alpha );
-	__rdp_ringbuffer_send();		
+    // Set Combine Mode
+    __rdp_ringbuffer_queue( 0x3C000063 );
+    __rdp_ringbuffer_queue( 0x082C01C0 | enable_alpha );
+    __rdp_ringbuffer_send();		
 		
-	// 1 pixel cycle
-	pixel_mode=1;	
+    // 1 pixel cycle
+    pixel_mode=1;	
 }
 
 // NEW: RGBA_Scale
 // Brings color tint to textured rectangles plus alpha transparency
 void rdp_rgba_scale(uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _alpha)
 {	
-	// Set Prim Color
-	__rdp_ringbuffer_queue( 0x3A000000 );
-	__rdp_ringbuffer_queue( _r << 24 | _g << 16 | _b << 8 | _alpha );
+    // Set Prim Color
+    __rdp_ringbuffer_queue( 0x3A000000 );
+    __rdp_ringbuffer_queue( _r << 24 | _g << 16 | _b << 8 | _alpha );
     __rdp_ringbuffer_send();		
 }	
 
 // NEW: Load palette into TMEM
 void rdp_load_tlut(uint8_t _pal_bp, uint8_t _pal_num, uint16_t *_palette)
 {
-	uint8_t col_num = 15;
+    uint8_t col_num = 15;
 	
-	// 4 or 8bit?
-	if (_pal_bp==0)
-	{	
-		if (_pal_num > 0 && _pal_num < 16)
-			col_num = (_pal_num << 6)-1; // (_pal_num * 16)-1;
-	}	
-	else
-	{	
-		col_num = 255;
-	}
+    // 4 or 8bit?
+    if (_pal_bp==0)
+    {	
+        if (_pal_num > 0 && _pal_num < 16)
+            col_num = (_pal_num << 6)-1; // PATCH ME! SHOULD BE << 4 WHEN FIXED (16 COLORS UPLOAD INSTEAD OF 64 PER PALETTE)
+    }	
+    else
+    {	
+        col_num = 255;
+    }
 	
-	// Set Texture Image (Palette)
-	rdp_command( 0x3D100000 ); // format RGBA / size 16bit
-	rdp_command( (uint32_t)_palette );
-	rdp_send();		
+    // Set Texture Image (Palette)
+    rdp_command( 0x3D100000 ); // format RGBA / size 16bit
+    rdp_command( (uint32_t)_palette );
+    rdp_send();		
 		
-	// Set Tile (TLUT)
-	rdp_command ( 0x35000100 );
-	rdp_command ( 0x07000000 ); // tile 7 to avoid SYNC TILE
-	rdp_send();		
+    // Set Tile (TLUT)
+    rdp_command ( 0x35000100 );
+    rdp_command ( 0x07000000 ); // tile 7 to avoid SYNC TILE
+    rdp_send();		
 		
-	// Load TLUT
-	rdp_command ( 0x30000000 );
-	rdp_command ( 7 << 24 | col_num << 12 ); // tile 7
-	rdp_send();	
+    // Load TLUT
+    rdp_command ( 0x30000000 );
+    rdp_command ( 0x07000000 | col_num << 12 ); // tile 7
+    rdp_send();	
 }
 
 
@@ -688,25 +688,25 @@ void __rdp_load_texture(sprite_t *sprite, int sh, int th )
     /* Save sprite width and height for managed sprite commands */
     cache.width = sh;
     cache.height = th;	
-	cache.cp_x = sprite->hslices;
-	cache.cp_y = sprite->vslices;
-	cache.cp_start = sprite->format;
+    cache.cp_x = sprite->hslices;
+    cache.cp_y = sprite->vslices;
+    cache.cp_start = sprite->format;
 }
 
 // NEW: Load function for 4 and 8bit textures
 void __rdp_load_texpal(sprite_t *sprite, int sh, int th )
 {	
-	// set correct mode
-	uint32_t bit_div = 0;
-	uint32_t wide_x;
+    // set correct mode
+    uint32_t bit_div = 0;
+    uint32_t wide_x;
 		
-	if (sprite->bitdepth==0) 
-	{  
-		bit_div = 1;
-		wide_x = (sprite->width >> 2) - 1;
-	}
-	else
-		wide_x = (sprite->width >> 1) - 1;
+    if (sprite->bitdepth==0) 
+    {  
+        bit_div = 1;
+        wide_x = (sprite->width >> 2) - 1;
+    }
+    else
+        wide_x = (sprite->width >> 1) - 1;
 		
     /* Invalidate data associated with sprite in cache */
     if( flush_strategy == FLUSH_STRATEGY_AUTOMATIC )
@@ -727,7 +727,7 @@ void __rdp_load_texpal(sprite_t *sprite, int sh, int th )
 
     /* Because we are dividing by 8, we want to round up if we have a remainder */
     int16_t round_amount = (cache.real_width  % 8) ? 1 : 0;	
-	uint32_t math_line = (((cache.real_width  >> 3) + round_amount) & 0x1FF) >> bit_div;
+    uint32_t math_line = (((cache.real_width  >> 3) + round_amount) & 0x1FF) >> bit_div;
 	
     // set tile (1/2), palette = 16bit
     __rdp_ringbuffer_queue( 0x35100000 | math_line << 9);
@@ -739,17 +739,17 @@ void __rdp_load_texpal(sprite_t *sprite, int sh, int th )
     __rdp_ringbuffer_queue( ((sh << 2) & 0xFFF) << 12 | ((th << 2) & 0xFFF) );
     __rdp_ringbuffer_send();	
 
-	// set tile (2/2), texture: set color index and texture bitdepth
-	__rdp_ringbuffer_queue( 0x35400000 | sprite->bitdepth << 19 | math_line << 9); 
-	__rdp_ringbuffer_queue( 0x40100 | hbits << 14 | wbits << 4 ); // ADD PALETTE USED !! ( << 20)
-	__rdp_ringbuffer_send();		
+    // set tile (2/2), texture: set color index and texture bitdepth
+    __rdp_ringbuffer_queue( 0x35400000 | sprite->bitdepth << 19 | math_line << 9); 
+    __rdp_ringbuffer_queue( 0x40100 | hbits << 14 | wbits << 4 ); // ADD PALETTE NUMBER !! ( << 20)
+    __rdp_ringbuffer_send();		
 
     /* Save sprite width and height for managed sprite commands */
     cache.width = sh;
     cache.height = th;	
-	cache.cp_x = sprite->hslices;
-	cache.cp_y = sprite->vslices;
-	cache.cp_start = sprite->format;  
+    cache.cp_x = sprite->hslices;
+    cache.cp_y = sprite->vslices;
+    cache.cp_start = sprite->format;  
 }
 
 /**
@@ -766,10 +766,10 @@ void rdp_load_texture(sprite_t *sprite )
 {
     if( !sprite ) { return; }
 
-	if (enable_tlut==0)
-		__rdp_load_texture(sprite, sprite->width - 1, sprite->height - 1 );
-	else
-		__rdp_load_texpal(sprite, sprite->width - 1, sprite->height - 1 );
+    if (enable_tlut==0)
+        __rdp_load_texture(sprite, sprite->width - 1, sprite->height - 1 );
+    else
+        __rdp_load_texpal(sprite, sprite->width - 1, sprite->height - 1 );
 }
 
 /**
@@ -804,50 +804,50 @@ void rdp_draw_textured_rectangle_scaled( int tx, int ty, int bx, int by, double 
     /* Cant display < 0, so must clip size and move S,T coord accordingly */
     if( tx < 0 )
     {
-		if ( tx < -cache.width * x_scale) { return; }
+        if ( tx < -cache.width * x_scale) { return; }
         s += (int)(((double)((-tx) << 5)) * (1.0 / x_scale));
         tx = 0;
     }
 
     if( ty < 0 )
     {
-		if ( ty < -cache.height * y_scale ) { return; }
+        if ( ty < -cache.height * y_scale ) { return; }
         t += (int)(((double)((-ty) << 5)) * (1.0 / y_scale));
         ty = 0;
     }
 
-	// mirror horizontally or vertically
-	if (flags > 0)
-	{	
-		if (flags != 2)
-			s += ( (cache.width+1) + ((cache.real_width-(cache.width+1))<<1) ) << 5;
+    // mirror horizontally or vertically
+    if (flags > 0)
+    {	
+        if (flags != 2)
+            s += ( (cache.width+1) + ((cache.real_width-(cache.width+1))<<1) ) << 5;
 	
-		if (flags != 1)
-			t += ( (cache.height+1) + ((cache.real_height-(cache.height+1))<<1) ) << 5;	
-	}	
+        if (flags != 1)
+            t += ( (cache.height+1) + ((cache.real_height-(cache.height+1))<<1) ) << 5;	
+    }	
 		
-	int xs;
+    int xs;
 	
-	// fixes 1/4 pixel cycle draw
-	if (pixel_mode == 1)
-	{
-		bx++;
-		by++;	
-		xs = 1024 / x_scale;
-	}
-	else
-		xs = 4096 / x_scale;
+    // fixes 1/4 pixel cycle draw
+    if (pixel_mode == 1)
+    {
+        bx++;
+        by++;	
+        xs = 1024 / x_scale;
+    }
+    else
+        xs = 4096 / x_scale;
 
-	/* Calculate the scaling constants based on a 6.10 fixed point system */
-	int ys = 1024 / y_scale;
+    /* Calculate the scaling constants based on a 6.10 fixed point system */
+    int ys = 1024 / y_scale;
 
-	/* Set up rectangle position in screen space */
-	__rdp_ringbuffer_queue( 0x24000000 | bx << 14 | by << 2 );
-	__rdp_ringbuffer_queue( tx << 14 | ty << 2 );
+    /* Set up rectangle position in screen space */
+    __rdp_ringbuffer_queue( 0x24000000 | bx << 14 | by << 2 );
+    __rdp_ringbuffer_queue( tx << 14 | ty << 2 );
    
-	/* Set up texture position and scaling to 1:1 copy */
-	__rdp_ringbuffer_queue( s << 16 | t );
-	__rdp_ringbuffer_queue( (xs & 0xFFFF) << 16 | (ys & 0xFFFF) );	
+    /* Set up texture position and scaling to 1:1 copy */
+    __rdp_ringbuffer_queue( s << 16 | t );
+    __rdp_ringbuffer_queue( (xs & 0xFFFF) << 16 | (ys & 0xFFFF) );	
 		
     /* Send command */
     __rdp_ringbuffer_send();
@@ -993,34 +993,33 @@ void rdp_draw_filled_rectangle( int tx, int ty, int bx, int by )
 // NEW: Triangle setup
 void rdp_triangle_setup( int type )
 {
-	switch ( type )
-	{
-		case 0:
-			tri_set=0x08000000; // Flat
-			break;
-		case 1:
-			tri_set=0x0C000000; // Goraud
-			break;
-		case 2:
-			tri_set=0x0A000000; // Textured
-			break;	
-		case 3:
-			tri_set=0x0E000000; // Goraud Textured
-			break;
-		case 4:
-			tri_set=0x09000000; // Flat Z-Buffer
-			break;
-		case 5:
-			tri_set=0x0D000000; // Goraud Z-Buffer
-			break;
-		case 6:
-			tri_set=0x0B000000; // Textured Z-Buffer
-			break;
-		case 7:
-			tri_set=0x0F000000; // Goraud Textured Z-Buffer
-			break;			
-	}	
-	
+    switch ( type )
+    {
+        case 0:
+            tri_set=0x08000000; // Flat
+            break;
+        case 1:
+            tri_set=0x0C000000; // Goraud
+            break;
+        case 2:
+            tri_set=0x0A000000; // Textured
+            break;	
+        case 3:
+            tri_set=0x0E000000; // Goraud Textured
+            break;
+        case 4:
+            tri_set=0x09000000; // Flat Z-Buffer
+            break;
+        case 5:
+            tri_set=0x0D000000; // Goraud Z-Buffer
+            break;
+        case 6:
+            tri_set=0x0B000000; // Textured Z-Buffer
+            break;
+        case 7:
+            tri_set=0x0F000000; // Goraud Textured Z-Buffer
+            break;			
+    }	
 }
 
 /**
@@ -1112,129 +1111,129 @@ void rdp_set_texture_flush( flush_t flush )
 // NEW SPRITE CP (virtual center)
 void rdp_cp_sprite( int x, int y, int flags, int cp_x, int cp_y, int line )
 {
-	// Attempts to read embedded cp
-	if (cp_x==0)
-	{
-		if (cp_y==0)
-		{
-			cp_x=cache.cp_x;
-			cp_y=cache.cp_y;
-		}
-	}
+    // Attempts to read embedded cp
+    if (cp_x==0)
+    {
+        if (cp_y==0)
+        {
+            cp_x=cache.cp_x;
+            cp_y=cache.cp_y;
+        }
+    }
 	
-	// left optimized texture alignment
-	cp_x-=cache.cp_start;
+    // left optimized texture alignment
+    cp_x-=cache.cp_start;
 	
-	int16_t next_line = 0;
+    int16_t next_line = 0;
 		
-	// Position based on flipping
-	if (flags==0)	
-	{	
-		x-=cp_x;
-	}	
-	else
-	{	
-		// Mirror X (flags 1 & 3)
-		if (flags!=2)	
-			x-=cache.width-cp_x-1;
-		else
-			x-=cp_x;
-	}
+    // Position based on flipping
+    if (flags==0)	
+    {	
+        x-=cp_x;
+    }	
+    else
+    {	
+        // Mirror X (flags 1 & 3)
+        if (flags!=2)	
+            x-=cache.width-cp_x-1;
+        else
+            x-=cp_x;
+    }
 	
-	// Mirror Y and reverse organizing	
-	if (flags>1)
-	{			
-		y-=cache.height-cp_y;
-		next_line=-cache.height-1;
-	}	
-	else
-	{	
-		y-=cp_y;			
-		next_line=cache.height+1;	
+    // Mirror Y and reverse organizing	
+    if (flags>1)
+    {			
+        y-=cache.height-cp_y;
+        next_line=-cache.height-1;
+    }	
+    else
+    {	
+        y-=cp_y;			
+        next_line=cache.height+1;	
     }
 	
     rdp_draw_textured_rectangle_scaled( x, y + cache_line, x + cache.width, y + cache.height + cache_line, 1.0, 1.0, flags );
 	
-	// Fill when multiple object is requested
-	if (line>0) 
-		cache_line+=next_line;
-	else
-		cache_line=0;
+    // Fill when multiple object is requested
+    if (line>0) 
+        cache_line+=next_line;
+    else
+        cache_line=0;
 	
 }
 
 // NEW SPRITE SCALED CP (virtual center)
 void rdp_cp_sprite_scaled( int x, int y, float x_scale, float y_scale, int flags, int cp_x, int cp_y, int line )
 {
-	// Attempts to read embedded cp
-	if (cp_x==0)
-	{
-		if (cp_y==0)
-		{
-			cp_x=cache.cp_x;
-			cp_y=cache.cp_y;
-		}
-	}
+    // Attempts to read embedded cp
+    if (cp_x==0)
+    {
+        if (cp_y==0)
+        {
+            cp_x=cache.cp_x;
+            cp_y=cache.cp_y;
+        }
+    }
 	
-	// left optimized texture alignment
-	cp_x-=cache.cp_start;
+    // left optimized texture alignment
+    cp_x-=cache.cp_start;
 	
-	// Scaling factor
-	int next_line;
-	int cp_x1 = (cp_x * x_scale);
+    // Scaling factor
+    int next_line;
+    int cp_x1 = (cp_x * x_scale);
     int cp_y1 = (cp_y * y_scale) - (y_scale-1);	
     int new_width = (cache.width * x_scale) + 0.5;
     int new_height = (cache.height * y_scale) + 0.5;
-	int scaled_line = cache_line * y_scale;
+    int scaled_line = cache_line * y_scale;
 		
-	// Improve Y rectangle
-	if (y_scale>1.0)
-		new_height+=(y_scale-1);
+    // Improve Y rectangle
+    if (y_scale>1.0)
+        new_height+=(y_scale-1);
 	
-	if (x_scale>1.0)
-		new_width+=(x_scale-1);	
+    if (x_scale>1.0)
+        new_width+=(x_scale-1);	
 	
-	// Position based on flipping
-	if (flags==0)	
-	{	
-		x-=cp_x1;
-	}	
-	else
-	{	
-		// Mirror X (flags 1 & 3)
-		if (flags!=2)	
-			x-=new_width-cp_x1-1;
-		else
-			x-=cp_x1;
-	}
+    // Position based on flipping
+    if (flags==0)	
+    {	
+        x-=cp_x1;
+    }	
+    else
+    {	
+        // Mirror X (flags 1 & 3)
+        if (flags!=2)	
+            x-=new_width-cp_x1-1;
+        else
+            x-=cp_x1;
+    }
 	
-	// Mirror Y and reverse organizing	
-	if (flags>1)
-	{			
-		y-=new_height-cp_y1;
-		next_line=-cache.height;
-		scaled_line-=extra_line;
-	}	
-	else
-	{	
-		y-=cp_y1;			
-		next_line=cache.height;
-		scaled_line+=extra_line;
+    // Mirror Y and reverse organizing	
+    if (flags>1)
+    {			
+        y-=new_height-cp_y1;
+        next_line=-cache.height;
+        scaled_line-=extra_line;
+    }	
+    else
+    {	
+        y-=cp_y1;			
+        next_line=cache.height;
+        scaled_line+=extra_line;
     }
 	
     rdp_draw_textured_rectangle_scaled( x, y + scaled_line, x + new_width, y + new_height + scaled_line, x_scale, y_scale, flags );
 	
-	// Fill when multiple objects are requested
-	if (line>0) 
-	{	
-		cache_line+=next_line;
-		extra_line++;
-	}	
-	else
-	{	
-		cache_line=0;
-		extra_line=0;
-	}
+    // Fill when multiple objects are requested
+    if (line>0) 
+    {	
+        cache_line+=next_line;
+        extra_line++;
+    }	
+    else
+    {	
+        cache_line=0;
+        extra_line=0;
+    }
 }
 
 #define __get_pixel( buffer, x, y ) \
@@ -1292,109 +1291,111 @@ void rdp_load_texbuf(uint16_t *buffer_texture, int sh, int th)
     /* Save sprite width and height for managed sprite commands */
     cache.width = sh;
     cache.height = th;	
-	cache.cp_x = 0;
-	cache.cp_y = 0;
-	cache.cp_start = 0;		
+    cache.cp_x = 0;
+    cache.cp_y = 0;
+    cache.cp_start = 0;		
 }	
 
 // NEW: Create a 16bit texture from the framebuffer
 void rdp_buffer_copy(display_context_t disp, uint16_t *buffer_texture, uint16_t x_buf, uint16_t y_buf, uint16_t width, uint16_t height)
 {
-	// only 16bit mode
-	if( disp == 0 || __bitdepth != 2 ) { return; } 
+    // only 16bit mode
+    if( disp == 0 || __bitdepth != 2 ) { return; } 
 
-	uint16_t *buffer16 = (uint16_t *)__get_buffer( disp );
-	int tex_pos=0;
+    uint16_t *buffer16 = (uint16_t *)__get_buffer( disp );
+    int tex_pos=0;
 	
-	// protect X limit
-	if (x_buf>__width-width)
-		x_buf=__width-width;
+    // protect X limit
+    if (x_buf>__width-width)
+        x_buf=__width-width;
 	
-	// protect Y limit
-	if (y_buf>__height-height)
-		y_buf=__height-height;
+    // protect Y limit
+    if (y_buf>__height-height)
+        y_buf=__height-height;
 	
-	// generate texture
+    // generate texture
     for(int j = y_buf; j < y_buf + height; j++) // Y
     {
         for(int i = x_buf; i < x_buf + width; i++) // X
         {
-			buffer_texture[tex_pos]=__get_pixel( buffer16, i, j);
-			tex_pos++;
+            buffer_texture[tex_pos]=__get_pixel( buffer16, i, j);
+            tex_pos++;
         }
     }	
 	
-	data_cache_hit_writeback(buffer_texture, (width * height) << 1 );
+    // flush
+    data_cache_hit_writeback(buffer_texture, (width * height) << 1 );
 	
-	// send texture to TMEM
-	rdp_load_texbuf(buffer_texture,width-1,height-1);
+    // send texture to TMEM
+    rdp_load_texbuf(buffer_texture,width-1,height-1);
 	
 }	
 
 // NEW: Resize a full framebuffer screen into 1 or 2 textures of max(64x64)
 void rdp_buffer_screen(display_context_t disp, uint16_t *buffer_texture, int texture_mode)
 {
-	// only 16bit mode
-	if( disp == 0 || __bitdepth != 2 ) { return; } 
+    // only 16bit mode
+    if( disp == 0 || __bitdepth != 2 ) { return; } 
 
-	uint16_t *buffer16 = (uint16_t *)__get_buffer( disp );
-	int tex_pos=0;
-	int width=64; // 320x240 default data
-	int height=48;
-	int step=5;
-	int y_step=120;
-	int y_step1=0;
+    uint16_t *buffer16 = (uint16_t *)__get_buffer( disp );
+    int tex_pos=0;
+    int width=64; // 320x240 default data
+    int height=48;
+    int step=5;
+    int y_step=120;
+    int y_step1=0;
 	
-	// 256x240?
-	if (__width==256)
-	{
-		height=60;
-		step=4;
-	}
-	else if (__width==512) // 512x480?
-		{
-			height=60;
-			step=8;
-			y_step=240;
-		}
-		else if (__width==640) // 640x480?
-			{
-				step=10;
-				y_step=240;
+    // 256x240?
+    if (__width==256)
+    {
+        height=60;
+        step=4;
+    }
+    else if (__width==512) // 512x480?
+        {
+            height=60;
+            step=8;
+            y_step=240;
+        }
+        else if (__width==640) // 640x480?
+            {
+                step=10;
+                y_step=240;
 			}	
 			
-	// Buffer screen on 1 texture
-	if (texture_mode==0)
-	{
-		height = height >> 1; // divide
-		width = width >> 1;
-		step = step << 1; // multiply
-		y_step = y_step << 1;
-	}	
-	else if (texture_mode==1)
-		{
-			height = height >> 1 ; // 64x24? split 1
-		}	
-		else if (texture_mode==2)
-			{
-				y_step1 = y_step;
-				y_step = __height;
-				height = height >> 1; // 64x24? split 2
-			}			
+    // Buffer screen on 1 texture
+    if (texture_mode==0)
+    {
+        height = height >> 1; // divide
+        width = width >> 1;
+        step = step << 1; // multiply
+        y_step = y_step << 1;
+    }	
+    else if (texture_mode==1)
+        {
+                height = height >> 1 ; // 64x24? split 1
+        }	
+        else if (texture_mode==2)
+            {
+                y_step1 = y_step;
+                y_step = __height;
+                height = height >> 1; // 64x24? split 2
+            }			
 	
-	// generate texture
+    // generate texture
     for(int j = y_step1; j < y_step; j+=step) // Y
     {
         for(int i = 0; i < __width; i+=step) // X
         {
-			buffer_texture[tex_pos]=__get_pixel( buffer16, i, j);
-			tex_pos++;
+            buffer_texture[tex_pos]=__get_pixel( buffer16, i, j);
+            tex_pos++;
         }
     }	
 	
-	data_cache_hit_writeback(buffer_texture, (width * height) << 1 );
+    // Flush
+    data_cache_hit_writeback(buffer_texture, (width * height) << 1 );
 	
-	// send texture to TMEM
-	rdp_load_texbuf(buffer_texture,width-1,height-1);
+    // send texture to TMEM
+    rdp_load_texbuf(buffer_texture,width-1,height-1);
 	
 }	
